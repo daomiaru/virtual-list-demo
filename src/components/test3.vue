@@ -1,13 +1,14 @@
 <template>
     <!-- <Item></Item>     -->
      <!-- :ref="(el) => renderItemsRef(el, item.id)" -->
+      <!--  @mount="(node: any) => {
+                     renderItemsRef(node, item.id, height)
+                }" -->
     <button @click="handleTest">插入动态元素</button>
     <div ref="viewportRef" class="viewport" @scroll="handleScroll">
         <div class="content-placeholder" :style="{ height: `${renderTotalHeight}px` }">
             <div class="content-wrap" :style="{ transform: `translateY(${offset}px)` }">
-                <Item v-for="item in renderItems"  :key="item.id" @mount="(node: any) => {
-                     renderItemsRef(node, item.id, height)
-                }"
+                <Item v-for="item in renderItems" :item="item"  :key="item.id" @sizeChange="(node) => handleSizeChange(node, item)"
                     :style="{ height: `${item.height}px` }" class="content-item">
                     {{ item.text }}
                 </Item>
@@ -19,10 +20,10 @@
 <script setup>
 import Item from './item.vue';
 import { ref, onMounted, nextTick } from 'vue';
-const RENDER_SIZE = 15; // 假设每次渲染 15 条数据
-const ITEM_HEIGHT = 100; // 假设每个 item 真实渲染后高度接近 100px
+const RENDER_SIZE = 10; // 假设每次渲染 15 条数据
+const ITEM_HEIGHT = 50; // 假设每个 item 真实渲染后高度接近 100px
 // 假设 10000 条数据
-const allItems = Array.from({ length: 20 }, (v, i) => {
+const allItems = Array.from({ length: 100 }, (v, i) => {
     return {
         id: i,
         text: `item-${i + 1}`,
@@ -42,6 +43,13 @@ const handleTest = () => {
         text: `item-99`,
         height: Math.floor(Math.random() * 100) + 50
     })
+}
+const handleSizeChange = (node, item) => {
+    console.log(item)
+    if(node?.offsetHeight) {
+        item.height = node.offsetHeight;
+    }
+    renderItemsRef(node, item.id)
 }
 const updateRenderItems = () => {
     const scrollTop = viewportRef.value?.scrollTop;
@@ -67,7 +75,7 @@ const updateRenderItems = () => {
 const renderItemsRef = (el, id) => {
     if (el) {
         // 存放已渲染的 item 的高度
-        console.log(el.offsetHeight)
+        // console.log(el.offsetHeight)
         hasRenderedItemsHeight.value[id] = el.offsetHeight;
         // console.log(hasRenderedItemsHeight)
         // 更新容器的高度
@@ -77,7 +85,7 @@ const renderItemsRef = (el, id) => {
 
 const updateRenderTotalHeight = () => {
     renderTotalHeight.value = allItems.reduce((sum, item) => sum + (hasRenderedItemsHeight.value[item.id] || ITEM_HEIGHT), 0);
-    console.log(renderTotalHeight.value)
+    // console.log(renderTotalHeight.value)
 }
 
 const handleScroll = () => {
@@ -97,10 +105,10 @@ onMounted(() => {
 }
 
 .content-placeholder {
-    position: absolute;
+    /* position: absolute;
     left: 0;
     top: 0;
-    right: 0;
+    right: 0; */
 }
 
 .content-item {
@@ -109,5 +117,6 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
 }
 </style>

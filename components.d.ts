@@ -12,6 +12,7 @@ declare module 'vue' {
     Test: typeof import('./src/components/test.vue')['default']
     Test2: typeof import('./src/components/test2.vue')['default']
     Test3: typeof import('./src/components/test3.vue')['default']
+    Test4: typeof import('./src/components/test4.vue')['default']
     Vlist: typeof import('./src/components/vlist.vue')['default']
   }
 }
