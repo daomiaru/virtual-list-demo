@@ -48,6 +48,7 @@
   
   const handleScroll = () => {
     const scrollTop = viewportRef.value?.scrollTop;
+    console.log(scrollTop);
     // 更新 startIndex
     startIndex.value = Math.floor(scrollTop / ITEM_HEIGHT);
   }
